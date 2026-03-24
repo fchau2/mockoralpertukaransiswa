@@ -872,10 +872,22 @@ const pools = [
   }
 ];
 
-// Pick one question randomly from each phase pool
+// Track last used index per phase to avoid repeating same question back-to-back
+const lastUsed = {};
+
 function buildSession() {
   return pools.map((pool, i) => {
-    const q = pool.questions[Math.floor(Math.random() * pool.questions.length)];
+    const n = pool.questions.length;
+    let idx;
+    if (n === 1) {
+      idx = 0;
+    } else {
+      do {
+        idx = Math.floor(Math.random() * n);
+      } while (idx === lastUsed[i]);
+    }
+    lastUsed[i] = idx;
+    const q = pool.questions[idx];
     return { ...q, phase: pool.phase, id: 'q' + i };
   });
 }
