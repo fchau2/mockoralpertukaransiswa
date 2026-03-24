@@ -1,0 +1,1084 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Latihan SAC — Kehidupan Remaja</title>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F4EF;
+    --surface: #FFFFFF;
+    --border: #E2DDD6;
+    --text: #1C1A17;
+    --muted: #8A8178;
+    --ibu-bg: #FFFFFF;
+    --ibu-border: #E2DDD6;
+    --student-bg: #2D5016;
+    --student-text: #F0F7E8;
+    --accent: #C4632A;
+    --accent-light: #FAF0E8;
+    --hint-bg: #F5F0E8;
+    --hint-border: #D4C9B8;
+    --good: #2D5016;
+    --good-bg: #EDF4E8;
+    --better: #C4632A;
+    --better-bg: #FAF0E8;
+    --phase-bg: #EDE8E0;
+    --radius: 14px;
+    --shadow: 0 2px 12px rgba(0,0,0,0.06);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  header {
+    width: 100%;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 1rem 1.5rem;
+    display: flex;
+    align-items: baseline;
+    gap: 1rem;
+  }
+
+  header h1 {
+    font-family: 'Instrument Serif', serif;
+    font-size: 22px;
+    font-weight: 400;
+    color: var(--text);
+  }
+
+  header span {
+    font-size: 13px;
+    color: var(--muted);
+  }
+
+  .container {
+    width: 100%;
+    max-width: 680px;
+    padding: 1.5rem 1rem 6rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .scenario-card {
+    background: var(--accent-light);
+    border: 1px solid #E8C9B0;
+    border-radius: var(--radius);
+    padding: 1rem 1.25rem;
+    font-size: 13px;
+    line-height: 1.7;
+    color: #6B3B1A;
+  }
+
+  .scenario-card strong {
+    display: block;
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--accent);
+    margin-bottom: 0.4rem;
+  }
+
+  /* Progress */
+  .progress-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .progress-dots {
+    display: flex;
+    gap: 5px;
+    flex: 1;
+  }
+
+  .dot {
+    flex: 1;
+    height: 4px;
+    border-radius: 2px;
+    background: var(--border);
+    transition: background 0.4s;
+  }
+
+  .dot.done { background: var(--good); }
+  .dot.active { background: var(--accent); }
+
+  .progress-label {
+    font-size: 12px;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+
+  /* Chat */
+  #chat {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .msg-wrap { display: flex; flex-direction: column; gap: 3px; }
+  .msg-wrap.ibu-wrap { align-items: flex-start; }
+  .msg-wrap.student-wrap { align-items: flex-end; }
+
+  .speaker {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding: 0 4px;
+  }
+
+  .bubble {
+    max-width: 85%;
+    padding: 11px 15px;
+    border-radius: 16px;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  .bubble.ibu {
+    background: var(--ibu-bg);
+    border: 1px solid var(--ibu-border);
+    border-bottom-left-radius: 4px;
+    box-shadow: var(--shadow);
+  }
+
+  .bubble.ibu .translation {
+    display: block;
+    margin-top: 5px;
+    font-size: 12px;
+    color: var(--muted);
+    font-style: italic;
+    border-top: 1px solid var(--border);
+    padding-top: 5px;
+  }
+
+  .bubble.student {
+    background: var(--student-bg);
+    color: var(--student-text);
+    border-bottom-right-radius: 4px;
+  }
+
+  .phase-tag {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    background: var(--phase-bg);
+    color: var(--muted);
+    padding: 2px 8px;
+    border-radius: 20px;
+    margin-bottom: 4px;
+  }
+
+  /* Hint card */
+  .hint-card {
+    background: var(--hint-bg);
+    border: 1px solid var(--hint-border);
+    border-radius: var(--radius);
+    padding: 1rem 1.25rem;
+    font-size: 13px;
+    display: none;
+    flex-direction: column;
+    gap: 0.75rem;
+    max-width: 85%;
+    align-self: flex-start;
+    margin-left: 4px;
+  }
+
+  .hint-card.visible { display: flex; }
+
+  .hint-section-title {
+    font-size: 10px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    margin-bottom: 4px;
+  }
+
+  .keywords {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .kw {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 3px 10px;
+    font-size: 12.5px;
+    color: var(--text);
+  }
+
+  .kw em {
+    font-style: normal;
+    font-size: 10px;
+    color: var(--muted);
+    margin-left: 3px;
+  }
+
+  .upgrade-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+
+  .upgrade-table th {
+    text-align: left;
+    font-size: 10px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding: 0 6px 6px;
+    color: var(--muted);
+  }
+
+  .upgrade-table td {
+    padding: 5px 6px;
+    vertical-align: middle;
+  }
+
+  .upgrade-table tr + tr td {
+    border-top: 1px solid var(--border);
+  }
+
+  .good-pill {
+    background: var(--good-bg);
+    color: var(--good);
+    border-radius: 20px;
+    padding: 2px 10px;
+    font-size: 12.5px;
+    display: inline-block;
+  }
+
+  .better-pill {
+    background: var(--better-bg);
+    color: var(--better);
+    border-radius: 20px;
+    padding: 2px 10px;
+    font-size: 12.5px;
+    font-weight: 500;
+    display: inline-block;
+  }
+
+  .arrow { color: var(--muted); font-size: 12px; }
+
+  .negotiation-tip {
+    background: var(--surface);
+    border-left: 3px solid var(--accent);
+    padding: 8px 12px;
+    border-radius: 0 8px 8px 0;
+    font-size: 13px;
+    color: var(--text);
+    line-height: 1.6;
+  }
+
+  /* Action dock */
+  .input-dock {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    padding: 0.75rem 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .input-inner {
+    width: 100%;
+    max-width: 680px;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+
+  .hint-btn {
+    font-size: 13px;
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    padding: 0 16px;
+    height: 46px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    transition: background 0.2s, color 0.2s;
+    flex: 1;
+  }
+
+  .hint-btn:hover { background: var(--hint-bg); color: var(--text); }
+
+  .next-btn {
+    flex: 1;
+    height: 46px;
+    padding: 0 18px;
+    background: var(--student-bg);
+    color: var(--student-text);
+    border: none;
+    border-radius: 10px;
+    font-size: 13px;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 500;
+    cursor: pointer;
+    transition: opacity 0.2s, transform 0.1s;
+    white-space: nowrap;
+  }
+
+  .next-btn:hover { opacity: 0.88; }
+  .next-btn:active { transform: scale(0.97); }
+
+  .speak-prompt {
+    font-size: 12px;
+    color: var(--muted);
+    text-align: center;
+  }
+
+  /* End screen */
+  #end-screen {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 2rem 1.5rem;
+    text-align: center;
+  }
+
+  #end-screen .big-title {
+    font-family: 'Instrument Serif', serif;
+    font-size: 28px;
+    font-weight: 400;
+  }
+
+  #end-screen p {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.7;
+    max-width: 400px;
+  }
+
+  .restart-btn {
+    padding: 10px 24px;
+    background: var(--student-bg);
+    color: var(--student-text);
+    border: none;
+    border-radius: 10px;
+    font-size: 14px;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 500;
+    cursor: pointer;
+    transition: opacity 0.2s;
+  }
+
+  .restart-btn:hover { opacity: 0.85; }
+
+  @media (max-width: 500px) {
+    header h1 { font-size: 18px; }
+    .bubble { max-width: 95%; }
+    .hint-card { max-width: 98%; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Latihan SAC — Kehidupan Remaja</h1>
+  <span>Unit 3 · Role-play dengan Ibu</span>
+</header>
+
+<div class="container">
+
+  <div class="scenario-card">
+    <strong>Skenario kamu</strong>
+    Kamu adalah siswa tahun ke-12 yang ingin mengikuti pertukaran ke Indonesia selama dua minggu di bulan Juli. Untuk membiayainya, kamu perlu bekerja paruh waktu. Ibumu ingin kamu fokus pada ujian akhir. <em>Yakinkan ibumu!</em>
+    <br><br>
+    <span style="font-size:12px; color:#8A6A50;">You are a Year 12 student wanting to do a 2-week exchange to Indonesia. To fund it you need a part-time job. Your mum wants you to focus on exams. Convince her!</span>
+  </div>
+
+  <div class="progress-row">
+    <div class="progress-dots" id="dots"></div>
+    <span class="progress-label" id="prog-label">Pertanyaan 1 dari 9</span>
+  </div>
+
+  <div id="chat"></div>
+  <div id="end-screen">
+    <div class="big-title">Bagus sekali! 🎉</div>
+    <p>Kamu telah menyelesaikan semua pertanyaan. Setiap putaran menggunakan pertanyaan yang berbeda — coba lagi untuk berlatih dengan variasi baru!</p>
+    <button class="restart-btn" id="restart-btn">Mulai lagi →</button>
+  </div>
+
+</div>
+
+<div class="input-dock" id="input-dock">
+  <div class="speak-prompt">Jawab dengan berbicara, lalu lanjut ke pertanyaan berikutnya</div>
+  <div class="input-inner">
+    <button class="hint-btn" id="hint-btn">💡 Lihat tips</button>
+    <button class="next-btn" id="next-btn">Pertanyaan berikutnya →</button>
+  </div>
+</div>
+
+<script>
+// ─── Question pools per phase ───────────────────────────────────────────────
+// Each phase has multiple questions. One is picked randomly each run.
+// Phases always appear in this order: Pembuka → Perjalanan → Kerja → Akademik → Penutup
+
+const pools = [
+  {
+    phase: "Pembuka",
+    questions: [
+      {
+        ibu: "Kamu ingin pergi ke mana? Indonesia? Selama dua minggu? Mengapa pertukaran ini sangat penting bagimu?",
+        en: "You want to go where? Indonesia? For two weeks? Why is this exchange so important to you?",
+        keywords: [
+          { word: "pengalaman berharga", gloss: "valuable experience" },
+          { word: "memperluas wawasan", gloss: "broaden horizons" },
+          { word: "kesempatan langka", gloss: "rare opportunity" },
+          { word: "pekerjaan sukarela", gloss: "volunteer work" },
+          { word: "bahasa dan budaya", gloss: "language & culture" },
+          { word: "masa depan", gloss: "future" },
+        ],
+        upgrades: [
+          { good: "pergi", goodEn: "go", better: "berpartisipasi dalam", betterEn: "participate in" },
+          { good: "belajar", goodEn: "learn", better: "memperdalam pemahaman", betterEn: "deepen my understanding of" },
+          { good: "bagus", goodEn: "good", better: "sangat bermanfaat", betterEn: "extremely beneficial" },
+          { good: "ingin", goodEn: "want to", better: "bertekad untuk", betterEn: "am determined to" },
+        ],
+        tip: "Mulailah dengan mengakui kekhawatiran Ibu sebelum menyampaikan alasanmu — misalnya \"Saya mengerti kekhawatiran Ibu, tetapi...\"",
+        tipEn: "Start by acknowledging Ibu's concern before stating your reasons — e.g. \"I understand your worry, Mum, but...\"",
+        audio: "audio/pembuka_1.mp3"
+      },
+      {
+        ibu: "Perjalanan ini pasti mahal. Bagaimana kamu akan membiayainya? Ibu tidak punya uang untuk ini.",
+        en: "This trip must be expensive. How are you going to pay for it? I don't have money for this.",
+        keywords: [
+          { word: "bekerja paruh waktu", gloss: "work part-time" },
+          { word: "menabung sendiri", gloss: "save up myself" },
+          { word: "tidak meminta uang Ibu", gloss: "not asking for your money" },
+          { word: "biaya perjalanan", gloss: "trip costs" },
+          { word: "target tabungan", gloss: "savings target" },
+          { word: "tanggung jawab sendiri", gloss: "my own responsibility" },
+        ],
+        upgrades: [
+          { good: "cari uang sendiri", goodEn: "earn money myself", better: "membiayai perjalanan ini secara mandiri", betterEn: "fund this trip independently" },
+          { good: "kerja", goodEn: "work", better: "mengambil pekerjaan paruh waktu", betterEn: "take on a part-time job" },
+          { good: "tidak minta Ibu", goodEn: "not ask Mum", better: "tidak akan membebani Ibu sama sekali", betterEn: "won't burden you at all" },
+          { good: "sudah hitung", goodEn: "already calculated", better: "sudah memperhitungkan semua biaya dengan rinci", betterEn: "have calculated all costs in detail" },
+        ],
+        tip: "Tegaskan bahwa kamu bertanggung jawab penuh secara finansial — \"Saya tidak akan meminta uang Ibu\" adalah pernyataan yang sangat meyakinkan.",
+        tipEn: "Be clear that you're taking full financial responsibility — \"I won't be asking you for money\" is a powerful reassurance here.",
+        audio: "audio/pembuka_2.mp3"
+      },
+      {
+        ibu: "Ibu dengar kamu mau ikut program ke Indonesia. Ceritakan lebih lanjut — apa yang sebenarnya kamu akan lakukan di sana?",
+        en: "I heard you want to join a program in Indonesia. Tell me more — what will you actually be doing there?",
+        keywords: [
+          { word: "mengajar bahasa Inggris", gloss: "teaching English" },
+          { word: "anak-anak sekolah dasar", gloss: "primary school children" },
+          { word: "program terstruktur", gloss: "structured program" },
+          { word: "kegiatan budaya", gloss: "cultural activities" },
+          { word: "belajar sambil berkontribusi", gloss: "learn while contributing" },
+          { word: "bermakna", gloss: "meaningful" },
+        ],
+        upgrades: [
+          { good: "bantu anak-anak", goodEn: "help kids", better: "memberdayakan anak-anak melalui pendidikan", betterEn: "empower children through education" },
+          { good: "lihat-lihat budaya", goodEn: "look at the culture", better: "mendalami budaya secara langsung", betterEn: "immerse myself in the culture directly" },
+          { good: "seru", goodEn: "fun/exciting", better: "penuh makna dan pembelajaran", betterEn: "full of meaning and learning" },
+          { good: "ada kegiatan", goodEn: "there are activities", better: "program yang sudah terstruktur dengan jelas", betterEn: "a clearly structured program" },
+        ],
+        tip: "Jelaskan secara spesifik tentang komponen sukarela — membantu anak-anak belajar bahasa Inggris menunjukkan tujuan mulia, bukan sekadar wisata.",
+        tipEn: "Be specific about the volunteer component — helping kids learn English shows purpose, not just tourism.",
+        audio: "audio/pembuka_3.mp3"
+      }
+    ]
+  },
+  {
+    phase: "Tentang perjalanan",
+    questions: [
+      {
+        ibu: "Bagaimana kamu memastikan keselamatanmu di Indonesia? Apa yang akan kamu lakukan jika terjadi keadaan darurat atau kamu sakit di sana?",
+        en: "How will you make sure you're safe in Indonesia? What will you do if there's an emergency or you get sick?",
+        keywords: [
+          { word: "program resmi", gloss: "official program" },
+          { word: "didampingi pembimbing", gloss: "supervised by a guide" },
+          { word: "asuransi perjalanan", gloss: "travel insurance" },
+          { word: "prosedur darurat", gloss: "emergency procedures" },
+          { word: "kontak darurat", gloss: "emergency contact" },
+          { word: "fasilitas kesehatan", gloss: "medical facilities" },
+        ],
+        upgrades: [
+          { good: "aman", goodEn: "safe", better: "terjamin keamanannya", betterEn: "guaranteed to be safe" },
+          { good: "ada yang jaga", goodEn: "someone is watching", better: "berada di bawah pengawasan profesional", betterEn: "under professional supervision" },
+          { good: "kalau sakit ke dokter", goodEn: "if sick, go to doctor", better: "sudah ada protokol medis yang jelas", betterEn: "there is already a clear medical protocol" },
+          { good: "tidak berbahaya", goodEn: "not dangerous", better: "memenuhi standar keselamatan internasional", betterEn: "meets international safety standards" },
+        ],
+        tip: "Jawab dua bagian — keamanan selama program DAN apa yang terjadi dalam keadaan darurat. Tunjukkan pada Ibu bahwa kamu sudah memikirkan skenario terburuk.",
+        tipEn: "Address both parts — safety during the program AND what happens in an emergency. Show Ibu you've thought about worst-case scenarios.",
+        audio: "audio/perjalanan_1.mp3"
+      },
+      {
+        ibu: "Keterampilan apa yang akan kamu kembangkan dari program ini? Apakah itu tidak bisa kamu dapatkan di sini saja?",
+        en: "What skills will you develop from this program? Can't you get those here anyway?",
+        keywords: [
+          { word: "kemampuan berbahasa", gloss: "language ability" },
+          { word: "kepemimpinan", gloss: "leadership" },
+          { word: "kemampuan beradaptasi", gloss: "adaptability" },
+          { word: "pengalaman langsung", gloss: "first-hand experience" },
+          { word: "tidak bisa digantikan", gloss: "cannot be replaced" },
+          { word: "berbeda dari kelas", gloss: "different from classroom learning" },
+        ],
+        upgrades: [
+          { good: "belajar bahasa", goodEn: "learn the language", better: "mengasah kemampuan berbahasa secara langsung", betterEn: "sharpen language skills directly" },
+          { good: "tidak bisa di sini", goodEn: "can't get it here", better: "tidak dapat diperoleh melalui pembelajaran di kelas", betterEn: "cannot be obtained through classroom learning" },
+          { good: "jadi lebih baik", goodEn: "become better", better: "berkembang secara signifikan", betterEn: "develop significantly" },
+          { good: "dapat banyak", goodEn: "gain a lot", better: "memperoleh keterampilan yang tidak ternilai", betterEn: "acquire invaluable skills" },
+        ],
+        tip: "Argumen utama di sini adalah imersi — kamu tidak bisa meniru pengalaman hidup dalam budaya itu dari dalam kelas. Buat perbandingan itu dengan jelas.",
+        tipEn: "The key argument here is immersion — you can't replicate living in the culture from a classroom. Make that contrast clear.",
+        audio: "audio/perjalanan_2.mp3"
+      },
+      {
+        ibu: "Bagaimana kamu akan tetap berhubungan dengan ibu selama di Indonesia? Ibu ingin tahu kamu baik-baik saja.",
+        en: "How will you stay in contact with me while you're in Indonesia? I want to know you're safe.",
+        keywords: [
+          { word: "menghubungi setiap hari", gloss: "contact every day" },
+          { word: "video call", gloss: "video call" },
+          { word: "selalu memberi kabar", gloss: "always keep you updated" },
+          { word: "nomor pembimbing", gloss: "supervisor's number" },
+          { word: "perbedaan waktu", gloss: "time difference" },
+          { word: "aplikasi pesan", gloss: "messaging app" },
+        ],
+        upgrades: [
+          { good: "hubungi tiap hari", goodEn: "contact every day", better: "berkomunikasi secara rutin setiap hari", betterEn: "communicate regularly every day" },
+          { good: "pakai WhatsApp", goodEn: "use WhatsApp", better: "memastikan Ibu selalu mendapat kabar terbaru", betterEn: "ensure you always have the latest updates" },
+          { good: "kasih nomor", goodEn: "give the number", better: "memberikan semua kontak yang diperlukan", betterEn: "provide all necessary contact details" },
+          { good: "tidak hilang kontak", goodEn: "won't lose contact", better: "menjaga komunikasi tanpa terputus", betterEn: "maintain uninterrupted communication" },
+        ],
+        tip: "Tawarkan rutinitas yang spesifik — \"Saya akan menghubungi Ibu setiap malam sebelum tidur\" jauh lebih meyakinkan daripada janji yang samar.",
+        tipEn: "Offer a specific routine — \"I'll contact you every night before bed\" is much more reassuring than a vague promise.",
+        audio: "audio/perjalanan_3.mp3"
+      },
+      {
+        ibu: "Bagaimana program ini memperluas wawasan budayamu? Apa yang akan kamu pelajari tentang Indonesia?",
+        en: "How does this program broaden your cultural understanding? What will you learn about Indonesia?",
+        keywords: [
+          { word: "wawasan lintas budaya", gloss: "cross-cultural awareness" },
+          { word: "adat dan tradisi", gloss: "customs and traditions" },
+          { word: "perspektif berbeda", gloss: "different perspectives" },
+          { word: "masyarakat lokal", gloss: "local community" },
+          { word: "tidak bisa dari buku", gloss: "can't learn from a book" },
+          { word: "pengalaman nyata", gloss: "real experience" },
+        ],
+        upgrades: [
+          { good: "tahu budaya Indonesia", goodEn: "know Indonesian culture", better: "memahami budaya Indonesia secara mendalam", betterEn: "understand Indonesian culture in depth" },
+          { good: "belajar adat", goodEn: "learn customs", better: "mendalami adat dan tradisi secara langsung", betterEn: "immerse myself in customs and traditions directly" },
+          { good: "lihat cara hidup", goodEn: "see how people live", better: "mengamati dan memahami cara hidup masyarakat setempat", betterEn: "observe and understand the local community's way of life" },
+          { good: "berbeda dari sini", goodEn: "different from here", better: "memperoleh perspektif yang tidak bisa didapat dari kelas", betterEn: "gain perspectives that can't be obtained from a classroom" },
+        ],
+        tip: "Berikan contoh spesifik tentang apa yang akan kamu alami — makanan, bahasa, kehidupan keluarga, budaya sekolah — untuk menunjukkan bahwa ini adalah pembelajaran nyata, bukan wisata.",
+        tipEn: "Give specific examples of what you'll experience — food, language, family life, school culture — to show this is genuine learning, not tourism.",
+        audio: "audio/perjalanan_4.mp3"
+      },
+      {
+        ibu: "Apa yang secara spesifik akan kamu pelajari tentang budaya Indonesia yang tidak bisa kamu pelajari di sini?",
+        en: "What specifically will you learn about Indonesian culture that you couldn't learn here?",
+        keywords: [
+          { word: "bahasa sehari-hari", gloss: "everyday language" },
+          { word: "kehidupan keluarga", gloss: "family life" },
+          { word: "makanan dan tradisi", gloss: "food and traditions" },
+          { word: "interaksi langsung", gloss: "direct interaction" },
+          { word: "tidak tersedia di Australia", gloss: "not available in Australia" },
+          { word: "konteks nyata", gloss: "real-life context" },
+        ],
+        upgrades: [
+          { good: "belajar bahasa di sana", goodEn: "learn the language there", better: "menggunakan bahasa Indonesia dalam konteks nyata", betterEn: "use Indonesian in a real-life context" },
+          { good: "lihat cara hidupnya", goodEn: "see how they live", better: "mengalami langsung kehidupan sehari-hari masyarakat Indonesia", betterEn: "experience Indonesian daily life first-hand" },
+          { good: "tidak bisa di sini", goodEn: "can't do it here", better: "mustahil diperoleh hanya dari pembelajaran di kelas", betterEn: "impossible to obtain from classroom learning alone" },
+          { good: "banyak hal baru", goodEn: "many new things", better: "pengalaman yang tidak ternilai dan tidak dapat digantikan", betterEn: "invaluable and irreplaceable experience" },
+        ],
+        tip: "Pertanyaan ini meminta hal yang spesifik — jangan berbicara secara umum. Sebutkan hal-hal konkret: berbicara Bahasa Indonesia di pasar, tinggal dengan keluarga angkat, mengajar di kelas nyata.",
+        tipEn: "This question asks for specifics — don't speak generally. Name concrete things: speaking Bahasa in a market, living with a host family, teaching in a real classroom.",
+        audio: "audio/perjalanan_5.mp3"
+      }
+    ]
+  },
+  {
+    phase: "Tentang pekerjaan paruh waktu",
+    questions: [
+      {
+        ibu: "Dan sekarang kamu bilang kamu perlu bekerja paruh waktu juga? Berapa hari dalam seminggu kamu berencana untuk bekerja?",
+        en: "And now you're saying you need a part-time job too? How many days a week are you planning to work?",
+        keywords: [
+          { word: "dua atau tiga hari", gloss: "two or three days" },
+          { word: "akhir pekan saja", gloss: "weekends only" },
+          { word: "jam kerja fleksibel", gloss: "flexible hours" },
+          { word: "tidak mengganggu jadwal sekolah", gloss: "won't disrupt school schedule" },
+          { word: "target tabungan", gloss: "savings target" },
+          { word: "sudah dipertimbangkan", gloss: "already considered carefully" },
+        ],
+        upgrades: [
+          { good: "kerja sedikit", goodEn: "work a little", better: "bekerja hanya dua shift per minggu", betterEn: "work only two shifts per week" },
+          { good: "tidak apa-apa", goodEn: "it's fine", better: "tidak akan berdampak negatif", betterEn: "won't have a negative impact" },
+          { good: "sudah pikir", goodEn: "already thought about it", better: "sudah memperhitungkan dengan matang", betterEn: "have carefully calculated everything" },
+          { good: "cukup", goodEn: "enough", better: "memadai untuk mencapai target", betterEn: "sufficient to reach my savings target" },
+        ],
+        tip: "Berikan angka yang tepat — \"dua shift per minggu, masing-masing empat jam\" jauh lebih meyakinkan daripada \"sedikit\".",
+        tipEn: "Give exact numbers — \"two shifts a week, four hours each\" is far more convincing than \"a little bit\".",
+        audio: "audio/pekerjaan_1.mp3"
+      },
+      {
+        ibu: "Bagaimana kamu akan menyeimbangkan kerja dan belajar dengan baik? Ibu tidak ingin nilaimu menurun.",
+        en: "How will you balance work and study well? I don't want your grades to drop.",
+        keywords: [
+          { word: "prioritas utama", gloss: "main priority" },
+          { word: "jadwal tertulis", gloss: "written schedule" },
+          { word: "mengalokasikan waktu", gloss: "allocate time" },
+          { word: "tanggung jawab", gloss: "responsibility" },
+          { word: "terbukti mampu", gloss: "proven capable" },
+          { word: "tidak akan berkompromi", gloss: "won't compromise on" },
+        ],
+        upgrades: [
+          { good: "bagi waktu", goodEn: "divide time", better: "mengalokasikan waktu secara strategis", betterEn: "allocate time strategically" },
+          { good: "nilai tidak akan turun", goodEn: "grades won't drop", better: "berkomitmen mempertahankan prestasi akademik", betterEn: "am committed to maintaining academic achievement" },
+          { good: "janji", goodEn: "I promise", better: "memberikan jaminan", betterEn: "give a guarantee" },
+          { good: "sudah biasa", goodEn: "I'm used to it", better: "memiliki rekam jejak yang baik", betterEn: "have a strong track record" },
+        ],
+        tip: "Rujuk pada prestasi masa lalumu — \"Selama ini nilai saya selalu...\". Gunakan bukti, bukan sekadar janji.",
+        tipEn: "Reference your past achievements — \"My grades have always been...\". Use evidence, not just promises.",
+        audio: "audio/pekerjaan_2.mp3"
+      },
+      {
+        ibu: "Berapa lama kamu perlu bekerja untuk menabung cukup uang? Dan apa manfaat pekerjaan ini bagimu selain uang?",
+        en: "How long do you need to work to save enough money? And what are the benefits of this job beyond money?",
+        keywords: [
+          { word: "menabung selama tiga bulan", gloss: "save for three months" },
+          { word: "pengalaman kerja", gloss: "work experience" },
+          { word: "kemandirian finansial", gloss: "financial independence" },
+          { word: "tanggung jawab pribadi", gloss: "personal responsibility" },
+          { word: "keterampilan baru", gloss: "new skills" },
+          { word: "tidak bergantung pada orang tua", gloss: "not relying on parents" },
+        ],
+        upgrades: [
+          { good: "butuh uang", goodEn: "need money", better: "mengembangkan kemandirian finansial", betterEn: "develop financial independence" },
+          { good: "cari pengalaman", goodEn: "look for experience", better: "membangun keterampilan dunia kerja", betterEn: "build workplace skills" },
+          { good: "sekitar tiga bulan", goodEn: "about three months", better: "dalam jangka waktu yang sudah diperhitungkan", betterEn: "within a carefully calculated timeframe" },
+          { good: "tidak minta uang", goodEn: "won't ask for money", better: "bertanggung jawab atas keuangan sendiri", betterEn: "take responsibility for my own finances" },
+        ],
+        tip: "Membingkai pekerjaan sebagai pembentukan karakter (bukan hanya mencari uang) menunjukkan kedewasaan — Ibu akan menghargai itu.",
+        tipEn: "Framing the job as character-building (not just fundraising) shows maturity — Ibu will respect that.",
+        audio: "audio/pekerjaan_3.mp3"
+      },
+      {
+        ibu: "Bagaimana kamu akan mengatasi kelelahan jika harus bekerja dan belajar pada saat yang sama?",
+        en: "How will you deal with fatigue if you have to work and study at the same time?",
+        keywords: [
+          { word: "menjaga kesehatan", gloss: "maintain health" },
+          { word: "tidur yang cukup", gloss: "enough sleep" },
+          { word: "tidak memaksakan diri", gloss: "not push myself too hard" },
+          { word: "istirahat yang teratur", gloss: "regular rest" },
+          { word: "mengenali batas diri", gloss: "know my limits" },
+          { word: "keseimbangan hidup", gloss: "life balance" },
+        ],
+        upgrades: [
+          { good: "tidak capek", goodEn: "won't be tired", better: "mampu mengelola tingkat energi saya", betterEn: "able to manage my energy levels" },
+          { good: "tidur banyak", goodEn: "sleep a lot", better: "memastikan waktu istirahat yang cukup", betterEn: "ensure sufficient rest time" },
+          { good: "tidak kerja terlalu banyak", goodEn: "won't work too much", better: "tidak akan melampaui batas kemampuan saya", betterEn: "won't exceed my limits" },
+          { good: "santai", goodEn: "relax / take it easy", better: "menjaga keseimbangan antara kerja, belajar, dan istirahat", betterEn: "maintain balance between work, study, and rest" },
+        ],
+        tip: "Tunjukkan kesadaran diri — Ibu akan lebih yakin jika kamu mengakui bahwa kelelahan itu nyata dan kamu punya rencana, daripada mengabaikannya.",
+        tipEn: "Show self-awareness — Ibu will be more convinced if you acknowledge fatigue is real and have a plan, rather than dismissing it.",
+        audio: "audio/pekerjaan_4.mp3"
+      },
+      {
+        ibu: "Jika beban kerja di sekolah meningkat tiba-tiba, misalnya ada ujian mendadak, apa yang akan kamu lakukan?",
+        en: "If your school workload suddenly increases — for example an unexpected test — what will you do?",
+        keywords: [
+          { word: "mengutamakan sekolah", gloss: "prioritise school" },
+          { word: "meminta jadwal fleksibel", gloss: "ask for a flexible roster" },
+          { word: "mengurangi shift", gloss: "reduce shifts" },
+          { word: "berkomunikasi dengan atasan", gloss: "communicate with my employer" },
+          { word: "rencana cadangan", gloss: "backup plan" },
+          { word: "tidak mengorbankan nilai", gloss: "won't sacrifice grades" },
+        ],
+        upgrades: [
+          { good: "berhenti kerja", goodEn: "stop working", better: "sementara mengurangi jam kerja", betterEn: "temporarily reduce work hours" },
+          { good: "bilang ke bos", goodEn: "tell the boss", better: "berkomunikasi secara proaktif dengan atasan", betterEn: "communicate proactively with my employer" },
+          { good: "sekolah dulu", goodEn: "school first", better: "selalu mengutamakan kewajiban akademik", betterEn: "always prioritise academic obligations" },
+          { good: "atur ulang jadwal", goodEn: "reschedule", better: "menyesuaikan jadwal kerja sesuai kebutuhan", betterEn: "adjust my work schedule according to my needs" },
+        ],
+        tip: "Tunjukkan fleksibilitas dan bahwa sekolah selalu didahulukan — \"Saya sudah berbicara dengan calon atasan tentang fleksibilitas jadwal\" sangat meyakinkan.",
+        tipEn: "Show flexibility and that school always comes first — \"I've already spoken to my potential employer about flexible scheduling\" is very convincing.",
+        audio: "audio/pekerjaan_5.mp3"
+      }
+    ]
+  },
+  {
+    phase: "Kekhawatiran akademik",
+    questions: [
+      {
+        ibu: "Ibu sangat khawatir tentang ujian akhirmu. Bagaimana kamu menjaga kualitas belajarmu jika kamu pergi selama dua minggu?",
+        en: "I'm very worried about your final exams. How will you maintain your study quality if you're away for two weeks?",
+        keywords: [
+          { word: "menyelesaikan tugas terlebih dahulu", gloss: "complete work in advance" },
+          { word: "jadwal belajar ketat", gloss: "strict study schedule" },
+          { word: "tetap berhubungan dengan guru", gloss: "stay in contact with teachers" },
+          { word: "disiplin", gloss: "discipline" },
+          { word: "rencana konkret", gloss: "concrete plan" },
+          { word: "bulan Juli", gloss: "July — not during school term" },
+        ],
+        upgrades: [
+          { good: "belajar", goodEn: "study", better: "menyelesaikan semua tugas terlebih dahulu", betterEn: "complete all tasks in advance" },
+          { good: "tidak masalah", goodEn: "no problem", better: "dapat diatasi dengan perencanaan matang", betterEn: "can be managed with careful planning" },
+          { good: "akan baik-baik saja", goodEn: "will be fine", better: "sudah memiliki rencana konkret", betterEn: "already have a concrete plan" },
+          { good: "mencoba", goodEn: "try to", better: "berkomitmen untuk", betterEn: "am committed to" },
+        ],
+        tip: "Ingatkan Ibu bahwa perjalanan ini saat liburan Juli — bukan saat sekolah berlangsung. Itu adalah penenangan utama!",
+        tipEn: "Remind Ibu the trip is during July holidays — not during term time. That's a key reassurance!",
+        audio: "audio/akademik_1.mp3"
+      },
+      {
+        ibu: "Jika nilaimu menurun karena semua kegiatan ini, apa yang akan kamu lakukan?",
+        en: "If your grades drop because of all these activities, what will you do?",
+        keywords: [
+          { word: "segera mengambil tindakan", gloss: "take immediate action" },
+          { word: "mengurangi jam kerja", gloss: "reduce work hours" },
+          { word: "meminta bantuan guru", gloss: "ask teacher for help" },
+          { word: "rencana cadangan", gloss: "backup plan" },
+          { word: "mengevaluasi kembali", gloss: "re-evaluate" },
+          { word: "sebagai langkah terakhir", gloss: "as a last resort" },
+        ],
+        upgrades: [
+          { good: "berhenti kerja", goodEn: "stop working", better: "segera mengurangi beban kerja", betterEn: "immediately reduce my workload" },
+          { good: "minta tolong", goodEn: "ask for help", better: "proaktif mencari dukungan akademik", betterEn: "proactively seek academic support" },
+          { good: "tidak akan terjadi", goodEn: "it won't happen", better: "sudah menyiapkan rencana cadangan", betterEn: "have already prepared a backup plan" },
+          { good: "oke", goodEn: "ok / alright", better: "siap bertanggung jawab penuh", betterEn: "ready to take full responsibility" },
+        ],
+        tip: "Tunjukkan bahwa kamu punya rencana cadangan — ini meyakinkan Ibu bahwa kamu sudah berpikir ke depan, bukan hanya bertindak impulsif.",
+        tipEn: "Show you have a contingency plan — this reassures Ibu that you've thought ahead, not just being impulsive.",
+        audio: "audio/akademik_2.mp3"
+      },
+      {
+        ibu: "Langkah apa yang akan kamu gunakan untuk persiapan ujian setelah kamu kembali dari Indonesia?",
+        en: "What steps will you take to prepare for exams after you return from Indonesia?",
+        keywords: [
+          { word: "langsung memulai revisi", gloss: "start revision immediately" },
+          { word: "jadwal belajar intensif", gloss: "intensive study schedule" },
+          { word: "bimbingan belajar", gloss: "tutoring / extra study" },
+          { word: "catatan lengkap", gloss: "complete notes" },
+          { word: "mengejar ketertinggalan", gloss: "catch up quickly" },
+          { word: "materi ujian prioritas", gloss: "priority exam material" },
+        ],
+        upgrades: [
+          { good: "belajar lebih", goodEn: "study more", better: "mengintensifkan sesi belajar", betterEn: "intensify my study sessions" },
+          { good: "ulang materi", goodEn: "review material", better: "melakukan revisi secara sistematis", betterEn: "revise systematically" },
+          { good: "siap ujian", goodEn: "ready for exams", better: "mempersiapkan diri secara menyeluruh", betterEn: "prepare myself thoroughly" },
+          { good: "tidak ketinggalan", goodEn: "won't fall behind", better: "memastikan tidak ada materi yang terlewat", betterEn: "ensure no material is missed" },
+        ],
+        tip: "Sebutkan mata pelajaran tertentu — \"terutama untuk Matematika dan Biologi\" — untuk menunjukkan kamu tahu persis apa yang perlu diperhatikan.",
+        tipEn: "Name specific subjects — \"especially for Maths and Biology\" — to show you know exactly what needs attention.",
+        audio: "audio/akademik_3.mp3"
+      },
+      {
+        ibu: "Mengapa tidak memusatkan perhatian sepenuhnya pada pelajaran tahun ini saja? Bukankah ujian lebih penting?",
+        en: "Why not just focus entirely on your studies this year? Aren't exams more important?",
+        keywords: [
+          { word: "tidak saling mengganggu", gloss: "don't interfere with each other" },
+          { word: "keseimbangan hidup", gloss: "life balance" },
+          { word: "motivasi belajar", gloss: "study motivation" },
+          { word: "justru meningkatkan", gloss: "in fact improves" },
+          { word: "terbukti secara penelitian", gloss: "proven by research" },
+          { word: "bukan penghalang", gloss: "not an obstacle" },
+        ],
+        upgrades: [
+          { good: "bisa keduanya", goodEn: "can do both", better: "mampu mengelola keduanya secara bersamaan", betterEn: "capable of managing both simultaneously" },
+          { good: "tidak mengganggu", goodEn: "won't interfere", better: "justru meningkatkan motivasi belajar", betterEn: "in fact improves my study motivation" },
+          { good: "sudah banyak yang berhasil", goodEn: "many have succeeded", better: "ada bukti nyata bahwa keduanya bisa berjalan beriringan", betterEn: "there is real evidence that both can go hand in hand" },
+          { good: "santai saja", goodEn: "it's fine / easy", better: "dengan manajemen waktu yang baik", betterEn: "with good time management" },
+        ],
+        tip: "Gunakan kata \"justru\" di sini — argumen bahwa memiliki tujuan yang bermakna justru membuat kamu belajar lebih keras, bukan sebaliknya.",
+        tipEn: "Use \"justru\" here — argue that having a meaningful goal actually makes you study harder, not less.",
+        audio: "audio/akademik_4.mp3"
+      },
+      {
+        ibu: "Bagaimana kamu akan membagi waktu antara belajar dan bekerja setiap minggunya? Ceritakan secara konkret.",
+        en: "How will you specifically divide your time between studying and working each week? Tell me concretely.",
+        keywords: [
+          { word: "jadwal mingguan", gloss: "weekly schedule" },
+          { word: "hari kerja", gloss: "work days" },
+          { word: "hari belajar", gloss: "study days" },
+          { word: "membagi secara adil", gloss: "divide fairly" },
+          { word: "tidak tumpang tindih", gloss: "no overlap" },
+          { word: "fleksibel tapi terstruktur", gloss: "flexible but structured" },
+        ],
+        upgrades: [
+          { good: "bagi waktu", goodEn: "divide time", better: "mengatur jadwal secara terperinci", betterEn: "organise my schedule in detail" },
+          { good: "kerja akhir pekan", goodEn: "work on weekends", better: "mengalokasikan akhir pekan khusus untuk kerja", betterEn: "allocate weekends specifically for work" },
+          { good: "belajar hari biasa", goodEn: "study on weekdays", better: "memfokuskan hari sekolah sepenuhnya untuk belajar", betterEn: "dedicate school days fully to studying" },
+          { good: "sudah ada rencananya", goodEn: "already have a plan", better: "sudah menyusun jadwal mingguan yang konkret", betterEn: "have already drawn up a concrete weekly schedule" },
+        ],
+        tip: "Tunjukkan jadwal mingguan yang nyata kepada Ibu — Senin sampai Jumat: belajar, Sabtu: kerja, Minggu: istirahat/ulang materi. Konkret selalu lebih baik dari yang samar.",
+        tipEn: "Walk Ibu through a real weekly example — Monday to Friday: study, Saturday: work, Sunday: rest/review. Concrete beats vague every time.",
+        audio: "audio/akademik_5.mp3"
+      }
+    ]
+  },
+  {
+    phase: "Penutup",
+    questions: [
+      {
+        ibu: "Kamu sudah memberikan banyak alasan. Tapi mengapa ibu harus mempercayaimu bahwa kamu bisa mengelola semuanya dengan baik?",
+        en: "You've given me a lot of reasons. But why should I trust that you can manage everything well?",
+        keywords: [
+          { word: "rekam jejak", gloss: "track record" },
+          { word: "membuktikan diri", gloss: "prove myself" },
+          { word: "komitmen nyata", gloss: "real commitment" },
+          { word: "tidak akan mengecewakan", gloss: "won't disappoint" },
+          { word: "saya mohon", gloss: "I humbly ask" },
+          { word: "dukungan Ibu", gloss: "your support, Mum" },
+        ],
+        upgrades: [
+          { good: "percaya saya", goodEn: "trust me", better: "berikan saya kesempatan untuk membuktikan diri", betterEn: "give me the chance to prove myself" },
+          { good: "saya janji", goodEn: "I promise", better: "saya berkomitmen sepenuh hati", betterEn: "I am wholeheartedly committed" },
+          { good: "saya bisa", goodEn: "I can do it", better: "saya telah menunjukkan bahwa saya mampu", betterEn: "I have shown that I am capable" },
+          { good: "tolong izinkan", goodEn: "please allow me", better: "saya mohon dukungan Ibu", betterEn: "I humbly ask for your support" },
+        ],
+        tip: "Akui kasih sayang Ibu terlebih dahulu — \"Saya tahu Ibu khawatir karena sayang...\" — lalu sampaikan permintaan terakhirmu. Kecerdasan emosional menentukan di sini.",
+        tipEn: "Acknowledge Ibu's love first — \"I know you're worried because you care...\" — then make your final appeal. Emotional intelligence wins here.",
+        audio: "audio/penutup_1.mp3"
+      }
+    ]
+  }
+];
+
+// Pick one question randomly from each phase pool
+function buildSession() {
+  return pools.map((pool, i) => {
+    const q = pool.questions[Math.floor(Math.random() * pool.questions.length)];
+    return { ...q, phase: pool.phase, id: 'q' + i };
+  });
+}
+
+let questions = buildSession();
+let current = 0;
+let hintVisible = false;
+
+const chatEl = document.getElementById('chat');
+const dotsEl = document.getElementById('dots');
+const progLabel = document.getElementById('prog-label');
+const nextBtn = document.getElementById('next-btn');
+const hintBtn = document.getElementById('hint-btn');
+const endScreen = document.getElementById('end-screen');
+const inputDock = document.getElementById('input-dock');
+
+function buildDots() {
+  dotsEl.innerHTML = '';
+  questions.forEach((_, i) => {
+    const d = document.createElement('div');
+    d.className = 'dot' + (i < current ? ' done' : i === current ? ' active' : '');
+    dotsEl.appendChild(d);
+  });
+  progLabel.textContent = current < questions.length
+    ? `Pertanyaan ${current + 1} dari ${questions.length}`
+    : 'Selesai!';
+}
+
+function scrollBottom() {
+  setTimeout(() => window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' }), 80);
+}
+
+function addIbuMsg(q) {
+  const wrap = document.createElement('div');
+  wrap.className = 'msg-wrap ibu-wrap';
+
+  const tag = document.createElement('span');
+  tag.className = 'phase-tag';
+  tag.textContent = q.phase;
+  wrap.appendChild(tag);
+
+  const spk = document.createElement('div');
+  spk.className = 'speaker';
+  spk.textContent = 'Ibu';
+  wrap.appendChild(spk);
+
+  const bub = document.createElement('div');
+  bub.className = 'bubble ibu';
+  bub.innerHTML = q.ibu + `<span class="translation">${q.en}</span>`;
+  wrap.appendChild(bub);
+
+  if (q.audio) {
+    const audioWrap = document.createElement('div');
+    audioWrap.style.cssText = 'display:flex;align-items:center;gap:8px;margin-top:6px;';
+
+    const audio = document.createElement('audio');
+    audio.src = q.audio;
+    audio.preload = 'auto';
+
+    const playBtn = document.createElement('button');
+    playBtn.style.cssText = 'background:none;border:1px solid var(--border);border-radius:20px;padding:4px 12px;font-size:12px;color:var(--muted);cursor:pointer;font-family:var(--font-sans,sans-serif);display:flex;align-items:center;gap:5px;';
+    playBtn.innerHTML = '▶ Dengarkan';
+
+    audio.addEventListener('ended', () => {
+      playBtn.innerHTML = '↺ Putar lagi';
+    });
+
+    playBtn.addEventListener('click', () => {
+      audio.currentTime = 0;
+      audio.play();
+      playBtn.innerHTML = '⏸ Sedang diputar...';
+    });
+
+    audio.play().catch(() => {});
+
+    audioWrap.appendChild(audio);
+    audioWrap.appendChild(playBtn);
+    wrap.appendChild(audioWrap);
+  }
+
+  chatEl.appendChild(wrap);
+  scrollBottom();
+}
+
+function buildHintCard(q) {
+  const card = document.createElement('div');
+  card.className = 'hint-card';
+  card.id = 'hint-' + q.id;
+
+  const kwTitle = document.createElement('div');
+  kwTitle.className = 'hint-section-title';
+  kwTitle.textContent = 'Kata kunci yang disarankan';
+  card.appendChild(kwTitle);
+
+  const kwRow = document.createElement('div');
+  kwRow.className = 'keywords';
+  q.keywords.forEach(k => {
+    const pill = document.createElement('span');
+    pill.className = 'kw';
+    pill.innerHTML = k.word + `<em>${k.gloss}</em>`;
+    kwRow.appendChild(pill);
+  });
+  card.appendChild(kwRow);
+
+  const upTitle = document.createElement('div');
+  upTitle.className = 'hint-section-title';
+  upTitle.style.marginTop = '4px';
+  upTitle.textContent = 'Tingkatkan kosakatamu — Good → Better';
+  card.appendChild(upTitle);
+
+  const table = document.createElement('table');
+  table.className = 'upgrade-table';
+  const thead = document.createElement('thead');
+  thead.innerHTML = '<tr><th>Biasa</th><th></th><th>Lebih kuat</th></tr>';
+  table.appendChild(thead);
+  const tbody = document.createElement('tbody');
+  q.upgrades.forEach(u => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>
+        <span class="good-pill">${u.good}</span>
+        ${u.goodEn ? `<span style="display:block;font-size:11px;color:var(--muted);margin-top:2px;padding-left:2px;">${u.goodEn}</span>` : ''}
+      </td>
+      <td class="arrow">→</td>
+      <td>
+        <span class="better-pill">${u.better}</span>
+        ${u.betterEn ? `<span style="display:block;font-size:11px;color:var(--muted);margin-top:2px;padding-left:2px;">${u.betterEn}</span>` : ''}
+      </td>`;
+    tbody.appendChild(tr);
+  });
+  table.appendChild(tbody);
+  card.appendChild(table);
+
+  const tipTitle = document.createElement('div');
+  tipTitle.className = 'hint-section-title';
+  tipTitle.style.marginTop = '4px';
+  tipTitle.textContent = 'Strategi negosiasi';
+  card.appendChild(tipTitle);
+
+  const tipBox = document.createElement('div');
+  tipBox.className = 'negotiation-tip';
+  tipBox.innerHTML = q.tip + (q.tipEn ? `<span style="display:block;margin-top:6px;font-size:12px;color:var(--muted);font-style:italic;">${q.tipEn}</span>` : '');
+  card.appendChild(tipBox);
+
+  chatEl.appendChild(card);
+  return card;
+}
+
+function showQuestion() {
+  if (current >= questions.length) return;
+  hintVisible = false;
+  hintBtn.textContent = '💡 Lihat tips';
+  addIbuMsg(questions[current]);
+  buildDots();
+  scrollBottom();
+}
+
+function handleNext() {
+  // Hide hint if open
+  const existingHint = document.getElementById('hint-' + questions[current].id);
+  if (existingHint) existingHint.classList.remove('visible');
+  hintVisible = false;
+  hintBtn.textContent = '💡 Lihat tips';
+
+  current++;
+  buildDots();
+
+  if (current < questions.length) {
+    setTimeout(() => showQuestion(), 400);
+  } else {
+    inputDock.style.display = 'none';
+    endScreen.style.display = 'flex';
+    scrollBottom();
+  }
+}
+
+hintBtn.addEventListener('click', () => {
+  if (current >= questions.length) return;
+  const id = 'hint-' + questions[current].id;
+  let card = document.getElementById(id);
+  if (!card) card = buildHintCard(questions[current]);
+  hintVisible = !hintVisible;
+  card.classList.toggle('visible', hintVisible);
+  hintBtn.textContent = hintVisible ? '✕ Sembunyikan tips' : '💡 Lihat tips';
+  if (hintVisible) scrollBottom();
+});
+
+nextBtn.addEventListener('click', handleNext);
+
+document.getElementById('restart-btn').addEventListener('click', () => {
+  questions = buildSession();
+  current = 0;
+  hintVisible = false;
+  chatEl.innerHTML = '';
+  endScreen.style.display = 'none';
+  inputDock.style.display = '';
+  hintBtn.textContent = '💡 Lihat tips';
+  buildDots();
+  showQuestion();
+});
+
+buildDots();
+showQuestion();
+</script>
+</body>
+</html>
