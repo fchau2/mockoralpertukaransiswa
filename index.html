@@ -395,6 +395,122 @@
 
   .restart-btn:hover { opacity: 0.85; }
 
+  /* Mode toggle */
+  .mode-toggle {
+    display: flex;
+    gap: 6px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 4px;
+  }
+
+  .mode-btn {
+    flex: 1;
+    padding: 7px 18px;
+    border: none;
+    border-radius: 7px;
+    font-size: 13px;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 500;
+    cursor: pointer;
+    background: transparent;
+    color: var(--muted);
+    transition: background 0.2s, color 0.2s;
+  }
+
+  .mode-btn.active {
+    background: var(--surface);
+    color: var(--text);
+    border: 0.5px solid var(--border);
+  }
+
+  /* Audio mode question card */
+  .audio-question-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.25rem;
+    text-align: center;
+  }
+
+  .audio-phase-tag {
+    font-size: 10px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    background: var(--phase-bg);
+    color: var(--muted);
+    padding: 2px 10px;
+    border-radius: 20px;
+  }
+
+  .audio-play-btn {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: var(--student-bg);
+    color: var(--student-text);
+    border: none;
+    font-size: 22px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.2s, transform 0.1s;
+  }
+
+  .audio-play-btn:hover { opacity: 0.85; }
+  .audio-play-btn:active { transform: scale(0.95); }
+
+  .audio-status {
+    font-size: 12px;
+    color: var(--muted);
+    min-height: 18px;
+  }
+
+  .show-text-btn {
+    font-size: 12px;
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    padding: 5px 14px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    transition: background 0.2s;
+  }
+
+  .show-text-btn:hover { background: var(--hint-bg); color: var(--text); }
+
+  .audio-text-reveal {
+    display: none;
+    background: var(--hint-bg);
+    border: 1px solid var(--hint-border);
+    border-radius: var(--border-radius-md);
+    padding: 0.75rem 1rem;
+    font-size: 14px;
+    line-height: 1.6;
+    text-align: left;
+    width: 100%;
+  }
+
+  .audio-text-reveal.visible { display: block; }
+
+  .audio-text-reveal .translation {
+    display: block;
+    font-size: 12px;
+    color: var(--muted);
+    font-style: italic;
+    margin-top: 6px;
+    padding-top: 6px;
+    border-top: 1px solid var(--border);
+  }
+
   @media (max-width: 500px) {
     header h1 { font-size: 18px; }
     .bubble { max-width: 95%; }
@@ -407,6 +523,10 @@
 <header>
   <h1>Latihan SAC — Kehidupan Remaja</h1>
   <span>Unit 3 · Role-play dengan Ibu</span>
+  <div class="mode-toggle" style="margin-left:auto;">
+    <button class="mode-btn active" id="btn-baca">📖 Baca</button>
+    <button class="mode-btn" id="btn-dengar">🔊 Dengar</button>
+  </div>
 </header>
 
 <div class="container">
@@ -420,20 +540,39 @@
 
   <div class="progress-row">
     <div class="progress-dots" id="dots"></div>
-    <span class="progress-label" id="prog-label">Pertanyaan 1 dari 9</span>
+    <span class="progress-label" id="prog-label">Pertanyaan 1 dari 5</span>
   </div>
 
-  <div id="chat"></div>
-  <div id="end-screen">
-    <div class="big-title">Bagus sekali! 🎉</div>
-    <p>Kamu telah menyelesaikan semua pertanyaan. Setiap putaran menggunakan pertanyaan yang berbeda — coba lagi untuk berlatih dengan variasi baru!</p>
-    <button class="restart-btn" id="restart-btn">Mulai lagi →</button>
+  <!-- BACA MODE -->
+  <div id="baca-view">
+    <div id="chat"></div>
+    <div id="end-screen">
+      <div class="big-title">Bagus sekali! 🎉</div>
+      <p>Kamu telah menyelesaikan semua pertanyaan. Setiap putaran menggunakan pertanyaan yang berbeda — coba lagi untuk berlatih dengan variasi baru!</p>
+      <button class="restart-btn" id="restart-btn">Mulai lagi →</button>
+    </div>
+  </div>
+
+  <!-- DENGAR MODE -->
+  <div id="dengar-view" style="display:none;">
+    <div id="audio-card" class="audio-question-card">
+      <span class="audio-phase-tag" id="audio-phase">—</span>
+      <button class="audio-play-btn" id="audio-play-btn">▶</button>
+      <div class="audio-status" id="audio-status">Tekan untuk mendengarkan pertanyaan</div>
+      <button class="show-text-btn" id="show-text-btn">Tampilkan teks pertanyaan</button>
+      <div class="audio-text-reveal" id="audio-text-reveal"></div>
+    </div>
+    <div id="end-screen-dengar" style="display:none;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:2rem 1.5rem;text-align:center;margin-top:1rem;">
+      <div style="font-family:'Instrument Serif',serif;font-size:28px;font-weight:400;">Bagus sekali! 🎉</div>
+      <p style="font-size:14px;color:var(--muted);margin:0.75rem 0 1rem;">Sesi selesai! Coba lagi dengan pertanyaan yang berbeda.</p>
+      <button class="restart-btn" id="restart-btn-dengar">Mulai lagi →</button>
+    </div>
   </div>
 
 </div>
 
 <div class="input-dock" id="input-dock">
-  <div class="speak-prompt">Jawab dengan berbicara, lalu lanjut ke pertanyaan berikutnya</div>
+  <div class="speak-prompt" id="dock-prompt">Jawab dengan berbicara, lalu lanjut ke pertanyaan berikutnya</div>
   <div class="input-inner">
     <button class="hint-btn" id="hint-btn">💡 Lihat tips</button>
     <button class="next-btn" id="next-btn">Pertanyaan berikutnya →</button>
@@ -895,6 +1034,9 @@ function buildSession() {
 let questions = buildSession();
 let current = 0;
 let hintVisible = false;
+let mode = 'baca'; // 'baca' or 'dengar'
+let currentAudio = null;
+let textVisible = false;
 
 const chatEl = document.getElementById('chat');
 const dotsEl = document.getElementById('dots');
@@ -903,6 +1045,16 @@ const nextBtn = document.getElementById('next-btn');
 const hintBtn = document.getElementById('hint-btn');
 const endScreen = document.getElementById('end-screen');
 const inputDock = document.getElementById('input-dock');
+const bacaView = document.getElementById('baca-view');
+const dengarView = document.getElementById('dengar-view');
+const audioPhase = document.getElementById('audio-phase');
+const audioPlayBtn = document.getElementById('audio-play-btn');
+const audioStatus = document.getElementById('audio-status');
+const showTextBtn = document.getElementById('show-text-btn');
+const audioTextReveal = document.getElementById('audio-text-reveal');
+const endScreenDengar = document.getElementById('end-screen-dengar');
+const btnBaca = document.getElementById('btn-baca');
+const btnDengar = document.getElementById('btn-dengar');
 
 function buildDots() {
   dotsEl.innerHTML = '';
@@ -919,6 +1071,8 @@ function buildDots() {
 function scrollBottom() {
   setTimeout(() => window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' }), 80);
 }
+
+// ── BACA MODE ────────────────────────────────────────────────────────────────
 
 function addIbuMsg(q) {
   const wrap = document.createElement('div');
@@ -938,35 +1092,6 @@ function addIbuMsg(q) {
   bub.className = 'bubble ibu';
   bub.innerHTML = q.ibu + `<span class="translation">${q.en}</span>`;
   wrap.appendChild(bub);
-
-  if (q.audio) {
-    const audioWrap = document.createElement('div');
-    audioWrap.style.cssText = 'display:flex;align-items:center;gap:8px;margin-top:6px;';
-
-    const audio = document.createElement('audio');
-    audio.src = q.audio;
-    audio.preload = 'auto';
-
-    const playBtn = document.createElement('button');
-    playBtn.style.cssText = 'background:none;border:1px solid var(--border);border-radius:20px;padding:4px 12px;font-size:12px;color:var(--muted);cursor:pointer;font-family:var(--font-sans,sans-serif);display:flex;align-items:center;gap:5px;';
-    playBtn.innerHTML = '▶ Dengarkan';
-
-    audio.addEventListener('ended', () => {
-      playBtn.innerHTML = '↺ Putar lagi';
-    });
-
-    playBtn.addEventListener('click', () => {
-      audio.currentTime = 0;
-      audio.play();
-      playBtn.innerHTML = '⏸ Sedang diputar...';
-    });
-
-    audio.play().catch(() => {});
-
-    audioWrap.appendChild(audio);
-    audioWrap.appendChild(playBtn);
-    wrap.appendChild(audioWrap);
-  }
 
   chatEl.appendChild(wrap);
   scrollBottom();
@@ -1036,7 +1161,7 @@ function buildHintCard(q) {
   return card;
 }
 
-function showQuestion() {
+function showQuestionBaca() {
   if (current >= questions.length) return;
   hintVisible = false;
   hintBtn.textContent = '💡 Lihat tips';
@@ -1045,18 +1170,15 @@ function showQuestion() {
   scrollBottom();
 }
 
-function handleNext() {
-  // Hide hint if open
+function handleNextBaca() {
   const existingHint = document.getElementById('hint-' + questions[current].id);
   if (existingHint) existingHint.classList.remove('visible');
   hintVisible = false;
   hintBtn.textContent = '💡 Lihat tips';
-
   current++;
   buildDots();
-
   if (current < questions.length) {
-    setTimeout(() => showQuestion(), 400);
+    setTimeout(() => showQuestionBaca(), 400);
   } else {
     inputDock.style.display = 'none';
     endScreen.style.display = 'flex';
@@ -1064,33 +1186,181 @@ function handleNext() {
   }
 }
 
-hintBtn.addEventListener('click', () => {
+// ── DENGAR MODE ──────────────────────────────────────────────────────────────
+
+function showQuestionDengar() {
   if (current >= questions.length) return;
-  const id = 'hint-' + questions[current].id;
-  let card = document.getElementById(id);
-  if (!card) card = buildHintCard(questions[current]);
-  hintVisible = !hintVisible;
-  card.classList.toggle('visible', hintVisible);
-  hintBtn.textContent = hintVisible ? '✕ Sembunyikan tips' : '💡 Lihat tips';
-  if (hintVisible) scrollBottom();
+  const q = questions[current];
+
+  // Stop any playing audio
+  if (currentAudio) { currentAudio.pause(); currentAudio = null; }
+
+  // Reset text toggle
+  textVisible = false;
+  audioTextReveal.classList.remove('visible');
+  showTextBtn.textContent = 'Tampilkan teks pertanyaan';
+
+  // Update card
+  audioPhase.textContent = q.phase;
+  audioStatus.textContent = 'Tekan untuk mendengarkan pertanyaan';
+  audioPlayBtn.textContent = '▶';
+  audioTextReveal.innerHTML = q.ibu + `<span class="translation">${q.en}</span>`;
+
+  // Preload audio
+  if (q.audio) {
+    currentAudio = new Audio(q.audio);
+    currentAudio.preload = 'auto';
+    currentAudio.addEventListener('ended', () => {
+      audioPlayBtn.textContent = '▶';
+      audioStatus.textContent = 'Selesai — jawab dengan berbicara, lalu lanjut';
+    });
+  }
+
+  buildDots();
+  endScreenDengar.style.display = 'none';
+  document.getElementById('audio-card').style.display = 'flex';
+}
+
+function handleNextDengar() {
+  if (currentAudio) { currentAudio.pause(); currentAudio = null; }
+  hintVisible = false;
+  hintBtn.textContent = '💡 Lihat tips';
+  const existingHint = document.getElementById('hint-dengar-' + current);
+  if (existingHint) existingHint.remove();
+
+  current++;
+  buildDots();
+  if (current < questions.length) {
+    showQuestionDengar();
+  } else {
+    inputDock.style.display = 'none';
+    document.getElementById('audio-card').style.display = 'none';
+    endScreenDengar.style.display = 'block';
+    scrollBottom();
+  }
+}
+
+audioPlayBtn.addEventListener('click', () => {
+  if (!currentAudio) return;
+  if (!currentAudio.paused) {
+    currentAudio.pause();
+    audioPlayBtn.textContent = '▶';
+    audioStatus.textContent = 'Dijeda';
+  } else {
+    currentAudio.currentTime = 0;
+    currentAudio.play();
+    audioPlayBtn.textContent = '⏸';
+    audioStatus.textContent = 'Sedang diputar...';
+  }
 });
 
-nextBtn.addEventListener('click', handleNext);
+showTextBtn.addEventListener('click', () => {
+  textVisible = !textVisible;
+  audioTextReveal.classList.toggle('visible', textVisible);
+  showTextBtn.textContent = textVisible ? 'Sembunyikan teks' : 'Tampilkan teks pertanyaan';
+});
 
-document.getElementById('restart-btn').addEventListener('click', () => {
+// ── MODE SWITCHING ────────────────────────────────────────────────────────────
+
+function switchMode(newMode) {
+  if (newMode === mode) return;
+  mode = newMode;
+
+  // Stop audio if switching away from dengar
+  if (currentAudio) { currentAudio.pause(); currentAudio = null; }
+
+  // Reset session
   questions = buildSession();
   current = 0;
   hintVisible = false;
   chatEl.innerHTML = '';
   endScreen.style.display = 'none';
+  endScreenDengar.style.display = 'none';
+  inputDock.style.display = '';
+  hintBtn.textContent = '💡 Lihat tips';
+
+  if (mode === 'baca') {
+    btnBaca.classList.add('active');
+    btnDengar.classList.remove('active');
+    bacaView.style.display = '';
+    dengarView.style.display = 'none';
+    hintBtn.style.display = '';
+    buildDots();
+    showQuestionBaca();
+  } else {
+    btnDengar.classList.add('active');
+    btnBaca.classList.remove('active');
+    bacaView.style.display = 'none';
+    dengarView.style.display = '';
+    hintBtn.style.display = '';
+    buildDots();
+    showQuestionDengar();
+  }
+}
+
+btnBaca.addEventListener('click', () => switchMode('baca'));
+btnDengar.addEventListener('click', () => switchMode('dengar'));
+
+// ── HINT (works in both modes) ────────────────────────────────────────────────
+
+hintBtn.addEventListener('click', () => {
+  if (current >= questions.length) return;
+  const q = questions[current];
+
+  if (mode === 'baca') {
+    const id = 'hint-' + q.id;
+    let card = document.getElementById(id);
+    if (!card) card = buildHintCard(q);
+    hintVisible = !hintVisible;
+    card.classList.toggle('visible', hintVisible);
+    hintBtn.textContent = hintVisible ? '✕ Sembunyikan tips' : '💡 Lihat tips';
+    if (hintVisible) scrollBottom();
+  } else {
+    // In dengar mode, append hint below audio card in dengar-view
+    const hintId = 'hint-dengar-' + current;
+    let card = document.getElementById(hintId);
+    if (!card) {
+      card = buildHintCard(q);
+      card.id = hintId;
+      card.style.maxWidth = '100%';
+      card.style.marginTop = '0.5rem';
+      dengarView.appendChild(card);
+    }
+    hintVisible = !hintVisible;
+    card.classList.toggle('visible', hintVisible);
+    hintBtn.textContent = hintVisible ? '✕ Sembunyikan tips' : '💡 Lihat tips';
+    if (hintVisible) scrollBottom();
+  }
+});
+
+nextBtn.addEventListener('click', () => {
+  if (mode === 'baca') handleNextBaca();
+  else handleNextDengar();
+});
+
+// ── RESTART ───────────────────────────────────────────────────────────────────
+
+function doRestart() {
+  if (currentAudio) { currentAudio.pause(); currentAudio = null; }
+  questions = buildSession();
+  current = 0;
+  hintVisible = false;
+  chatEl.innerHTML = '';
+  endScreen.style.display = 'none';
+  endScreenDengar.style.display = 'none';
   inputDock.style.display = '';
   hintBtn.textContent = '💡 Lihat tips';
   buildDots();
-  showQuestion();
-});
+  if (mode === 'baca') showQuestionBaca();
+  else showQuestionDengar();
+}
 
+document.getElementById('restart-btn').addEventListener('click', doRestart);
+document.getElementById('restart-btn-dengar').addEventListener('click', doRestart);
+
+// ── INIT ──────────────────────────────────────────────────────────────────────
 buildDots();
-showQuestion();
+showQuestionBaca();
 </script>
 </body>
 </html>
